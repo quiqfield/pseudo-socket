@@ -19,7 +19,7 @@
 struct pseudo_sock {
 	/* struct sock has to be the first member of pseudo_sock */
 	struct sock sk;
-    struct socket *sock; /* orig_sock */
+	struct socket *sock; /* orig_sock */
 };
 
 
@@ -32,7 +32,7 @@ static inline struct pseudo_sock *pseudo_sk(const struct sock *sk)
 static int psock_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
-    struct pseudo_sock *psk;
+	struct pseudo_sock *psk;
 
 	if (!sk) {
 		pr_debug("%s, NULL sk\n", __func__);
@@ -40,10 +40,10 @@ static int psock_release(struct socket *sock)
 	}
 	pr_debug("%s\n", __func__);
 
-    /* Clear orig_sock */
-    psk = pseudo_sk(sk);
-    if (psk->sock)
-        sock_release(psk->sock);
+	/* Clear orig_sock */
+	psk = pseudo_sk(sk);
+	if (psk->sock)
+		sock_release(psk->sock);
 
 	/* Clear state */
 	sock_orphan(sk);
@@ -60,16 +60,16 @@ static int psock_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 	int ret;
 	struct pseudo_sock *psk = pseudo_sk(sock->sk);
 
-    if (!uaddr)
-        return -EINVAL;
+	if (!uaddr)
+		return -EINVAL;
 
 	ret = psk->sock->ops->bind(psk->sock, uaddr, addr_len);
-    if (ret) {
-        pr_err("%s: psk->sock->ops->bind() failed: %d\n", __func__, ret);
-        return ret;
-    }
+	if (ret) {
+		pr_err("%s: psk->sock->ops->bind() failed: %d\n", __func__, ret);
+		return ret;
+	}
 
-    pr_debug("%s: bind success\n", __func__);
+	pr_debug("%s: bind success\n", __func__);
 
 	return 0;
 }
@@ -77,54 +77,54 @@ static int psock_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 static int psock_dgram_connect(struct socket *sock, struct sockaddr *addr,
 		int addr_len, int flags)
 {
-    struct pseudo_sock *psk = pseudo_sk(sock->sk);
-    return psk->sock->ops->connect(psk->sock, addr, addr_len, flags);
+	struct pseudo_sock *psk = pseudo_sk(sock->sk);
+	return psk->sock->ops->connect(psk->sock, addr, addr_len, flags);
 }
 
 static int psock_getname(struct socket *sock, struct sockaddr *uaddr,
 		int *uaddr_len, int peer)
 {
-    struct pseudo_sock *psk = pseudo_sk(sock->sk);
-    return psk->sock->ops->getname(psk->sock, uaddr, uaddr_len, peer);
+	struct pseudo_sock *psk = pseudo_sk(sock->sk);
+	return psk->sock->ops->getname(psk->sock, uaddr, uaddr_len, peer);
 }
 
 static unsigned int psock_dgram_poll(struct file *file, struct socket *sock,
 		poll_table *wait)
 {
-    struct pseudo_sock *psk = pseudo_sk(sock->sk);
-    return psk->sock->ops->poll(file, psk->sock, wait);
+	struct pseudo_sock *psk = pseudo_sk(sock->sk);
+	return psk->sock->ops->poll(file, psk->sock, wait);
 }
 
 static int psock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
-    struct pseudo_sock *psk = pseudo_sk(sock->sk);
-    return psk->sock->ops->ioctl(psk->sock, cmd, arg);
+	struct pseudo_sock *psk = pseudo_sk(sock->sk);
+	return psk->sock->ops->ioctl(psk->sock, cmd, arg);
 }
 
 static int psock_shutdown(struct socket *sock, int mode)
 {
-    struct pseudo_sock *psk = pseudo_sk(sock->sk);
-    return psk->sock->ops->shutdown(psk->sock, mode);
+	struct pseudo_sock *psk = pseudo_sk(sock->sk);
+	return psk->sock->ops->shutdown(psk->sock, mode);
 }
 
 static int psock_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 {
-    struct pseudo_sock *psk = pseudo_sk(sock->sk);
-    return psk->sock->ops->sendmsg(psk->sock, msg, size);
+	struct pseudo_sock *psk = pseudo_sk(sock->sk);
+	return psk->sock->ops->sendmsg(psk->sock, msg, size);
 }
 
 static int psock_recvmsg(struct socket *sock, struct msghdr *msg,
 		size_t size, int flags)
 {
-    struct pseudo_sock *psk = pseudo_sk(sock->sk);
-    return psk->sock->ops->recvmsg(psk->sock, msg, size, flags);
+	struct pseudo_sock *psk = pseudo_sk(sock->sk);
+	return psk->sock->ops->recvmsg(psk->sock, msg, size, flags);
 }
 
 static ssize_t psock_sendpage(struct socket *sock, struct page *page,
 		int offset, size_t size, int flags)
 {
-    struct pseudo_sock *psk = pseudo_sk(sock->sk);
-    return psk->sock->ops->sendpage(psk->sock, page, offset, size, flags);
+	struct pseudo_sock *psk = pseudo_sk(sock->sk);
+	return psk->sock->ops->sendpage(psk->sock, page, offset, size, flags);
 }
 
 
@@ -159,7 +159,7 @@ static struct proto psock_proto = {
 
 
 /*
- *  Create a pseudo socket.
+ *	Create a pseudo socket.
  */
 
 static int psock_create(struct net *net, struct socket *sock,
@@ -186,7 +186,7 @@ static int psock_create(struct net *net, struct socket *sock,
 		return -ENOMEM;
 
 	sock_init_data(sock, sk);
-    sk->sk_protocol = protocol;
+	sk->sk_protocol = protocol;
 
 	psk = pseudo_sk(sk);
 	psk->sock = NULL;
@@ -195,10 +195,10 @@ static int psock_create(struct net *net, struct socket *sock,
 	ret = __sock_create(get_net(&init_net), AF_INET,
 			sk->sk_type, sk->sk_protocol, &psk->sock, kern);
 	if (ret < 0) {
-        pr_err("%s: failed to create a socket with original family\n",
-                __func__);
+		pr_err("%s: failed to create a socket with original family\n",
+				__func__);
 		sk_free(sk);
-        return ret;
+		return ret;
 	}
 
 	return 0;
